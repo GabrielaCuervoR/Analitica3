@@ -33,6 +33,17 @@ def imputar_fc(df, list_cat):
 
   df[list_cat] = df_c  # Actualizar las columnas imputadas en el DataFrame original
   return df
+#Función para imputar variables numericas:
+def imputar_fn(df, list_num):
+  df_n = df[list_num]
+
+  imputer_n = SimpleImputer(strategy='median')
+  imputer_n.fit(df_n)
+  X_n = imputer_n.transform(df_n)
+  df_n = pd.DataFrame(X_n, columns=df_n.columns)
+
+  df[list_num] = df_n  # Actualizar las columnas imputadas en el DataFrame original
+  return df
 
 def sel_variables(modelos,X,y,threshold):
   
