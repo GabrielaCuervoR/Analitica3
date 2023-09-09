@@ -39,8 +39,8 @@ df2.isnull().sum() #Mirar la cantidad de nulos de cada variable
 list_cat=['EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance']
 list_num=['NumCompaniesWorked','TotalWorkingYears']
 
-a_funciones.imputar_fc(df2,list_cat)
-a_funciones.imputar_fn(df2,list_num)
+funciones.imputar_fc(df2,list_cat)
+funciones.imputar_fn(df2,list_num)
 df2 = df2.drop(['Over18','retirementDate', 'retirementType', 'resignationReason','StandardHours','EmployeeID','EmployeeCount'], axis = 1)
 
 ### verificación de la base datos
