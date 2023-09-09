@@ -41,7 +41,7 @@ list_num=['NumCompaniesWorked','TotalWorkingYears']
 
 funciones.imputar_fc(df2,list_cat)
 funciones.imputar_fn(df2,list_num)
-df2 = df2.drop(['Over18','retirementDate', 'retirementType', 'resignationReason','StandardHours','EmployeeID','EmployeeCount'], axis = 1)
+df2 = df2.drop(['Over18','EmployeeID','EmployeeCount'], axis = 1)
 
 ### verificación de la base datos
 
