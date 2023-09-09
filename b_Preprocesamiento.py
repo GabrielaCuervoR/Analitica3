@@ -6,7 +6,6 @@ import sys ## saber ruta de la que carga paquetes
 from sklearn.preprocessing import LabelEncoder ### Transformar la variable objetivo en numérica.
 
 ### Carga de base de datos
-action='https://raw.githubusercontent.com/juancamiloespana/aplicacionesanalitica/main/data/tbl_Action.csv'
 
 df_data='https://raw.githubusercontent.com/GabrielaCuervoR/Analitica3/main/Data/general_data.csv'
 df_retiros= 'https://raw.githubusercontent.com/GabrielaCuervoR/Analitica3/main/Data/retirement_info.csv'
