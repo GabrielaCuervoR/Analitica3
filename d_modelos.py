@@ -10,6 +10,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, mean_absolute_percentage_error, f1_score
+from sklearn.preprocessing import LabelEncoder
 import sqlite3 as sql
 from sklearn.linear_model import LogisticRegression
 from sklearn import svm, tree, metrics
@@ -109,7 +110,7 @@ X=pd.DataFrame(X2,columns=X1.columns)
 m_log = LogisticRegression(max_iter=1000,random_state=42, class_weight='balanced')
 m_rf= RandomForestClassifier(random_state=42, class_weight='balanced')
 m_tc = tree.DecisionTreeClassifier(random_state=42, class_weight='balanced')
-m_gbt=GradientBoostingClassifier(random_state=42, class_weight='balanced')
+m_gbt=GradientBoostingClassifier(random_state=42)
 
 
 modelos=list([m_log, m_rf, m_tc, m_gbt])
