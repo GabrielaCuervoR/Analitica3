@@ -47,6 +47,7 @@ cur= conn.cursor()
 funciones.ejecutar_sql('preprocesamiento.sql', cur)
 
 df2=pd.read_sql("select * from base_nueva", conn)
+df2 = df2.drop(columns=['index'], axis=1)##Se elimina la columna index que por defecto la sube sql
 
 ### verificación de nulos y datos faltantes
 # ==============================================================================
