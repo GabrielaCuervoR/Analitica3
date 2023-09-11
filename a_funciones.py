@@ -74,22 +74,18 @@ def preparar_datos (df):
    
     #######Cargar y procesar nuevos datos ######
     
-    #### Cargar modelo y listas 
-   
     list_cat=joblib.load("list_cat.pkl")
+    list_num=joblib.load("list_num.pkl")
     list_dummies=joblib.load("list_dummies.pkl")
     var_names=joblib.load("var_names.pkl")
-    scaler=joblib.load( "scaler.pkl") 
+    scaler=joblib.load( "scaler.pkl")
 
-    ####Ejecutar funciones de transformaciones
-    
-    df=imputar_f(df,list_cat)
+ ####Ejecutar funciones de transformaciones
+    df=funciones.imputar_fn(df,list_cat)
     df_dummies=pd.get_dummies(df,columns=list_dummies)
-    df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['perf_2023','EmpID2'])]
+    df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['Attrition','EmployeeID'])]
     X2=scaler.transform(df_dummies)
     X=pd.DataFrame(X2,columns=df_dummies.columns)
     X=X[var_names]
-    
-    
     
     return X
