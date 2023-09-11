@@ -42,6 +42,10 @@ import openpyxl
 #### Se trae la base de datos nueva para iniciar con el modelo ####
 
 conn= sql.connect("db_empleados") ## Con este comando se crea la base de datos o si ya existe se conecta
+
+cur= conn.cursor()
+funciones.ejecutar_sql('preprocesamiento.sql', cur)
+
 df2=pd.read_sql("select * from base_nueva", conn)
 
 ### verificación de nulos y datos faltantes
