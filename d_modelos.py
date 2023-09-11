@@ -62,7 +62,7 @@ list_num=['NumCompaniesWorked','TotalWorkingYears']
 
 funciones.imputar_fc(df2,list_cat)
 funciones.imputar_fn(df2,list_num)
-df2 = df2.drop(['Over18','EmployeeID','EmployeeCount'], axis = 1) #eliminación de variables de una sola categoria
+df2 = df2.drop(['Over18','EmployeeCount'], axis = 1) #eliminación de variables de una sola categoria
 
 ### verificación de la base datos
 # ==============================================================================
@@ -100,11 +100,12 @@ list_dummies=['BusinessTravel','Department','EducationField','Gender','JobRole',
 df_dummies=pd.get_dummies(df3,columns=list_dummies)
 
 y=df_dummies.Attrition
-X1= df_dummies.loc[:,~df_dummies.columns.isin(['Attrition'])]
+X1= df_dummies.loc[:,~df_dummies.columns.isin(['Attrition','EmployeeID'])]
 scaler=StandardScaler()
 scaler.fit(X1)
 X2=scaler.transform(X1)
 X=pd.DataFrame(X2,columns=X1.columns)
+
 
 ##### creación de modelos 
 # ==============================================================================
@@ -185,7 +186,7 @@ X3 = pd.DataFrame(X2.columns, columns=['Variables'])
 ### Unión de las variables con la importancia
 
 X2_con_importancias = pd.concat([X3, importancia], axis=1)
-X2_con_importancias
+X2_con_importancias.sort_values(by=['Importancia'], ascending=False)
 
 # Métricas de desempeño
 # ==============================================================================
@@ -203,6 +204,26 @@ cm = confusion_matrix(y_test,y_hat, labels=ranfor.classes_)
 disp = ConfusionMatrixDisplay(confusion_matrix = cm, display_labels=ranfor.classes_)
 disp.plot(cmap='gist_earth')
 plt.show()
+
+### exportar y guardar objetos 
+# ==============================================================================
+
+joblib.dump(rfc, "rfc.pkl") ##  Modelo final con variables seleccionadas
+joblib.dump(m_rf, "m_rf.pkl") ## Modelo con todas las variables
+joblib.dump(list_cat, "list_cat.pkl") ### para realizar imputacion variables categóricas
+joblib.dump(list_num, "list_num.pkl") ### para realizar imputacion variables numéricas
+joblib.dump(list_dummies, "list_dummies.pkl")  ### para convertir a dummies
+joblib.dump(var_names, "var_names.pkl")  ### para variables con que se entrena modelo
+joblib.dump(scaler, "scaler.pkl") ## 
+
+
+rfc = joblib.load("rfc.pkl")
+m_rf = joblib.load("m_rf.pkl")
+list_cat=joblib.load("list_cat.pkl")
+list_num=joblib.load("list_num.pkl")
+list_dummies=joblib.load("list_dummies.pkl")
+var_names=joblib.load("var_names.pkl")
+scaler=joblib.load("scaler.pkl") 
 
 
 
