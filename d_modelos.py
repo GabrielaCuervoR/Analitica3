@@ -37,8 +37,9 @@ import openpyxl
 ####### 9. Afinamiento de hiperparámetros mejor modelo
 ####### 10. Creación de modelo afinado
 ####### 11. Entramiento del modelo
-####### 12. Métricas de desempeño
-####### 13. Matriz de confusión
+####### 12. Importancia de las variables
+####### 13. Métricas de desempeño
+####### 14. Matriz de confusión
 # ==============================================================================
 #### Se trae la base de datos nueva para iniciar con el modelo ####
 
@@ -175,8 +176,16 @@ ranfor = RandomForestClassifier(
          )
 ranfor.fit(X_train, y_train)
 
-ranfor.feature_importances_
-X2.columns
+#### Importancia de las variables
+# ==============================================================================
+importancia = ranfor.feature_importances_
+importancia = pd.DataFrame(importancia, columns=['Importancia'])
+X3 = pd.DataFrame(X2.columns, columns=['Variables'])
+
+### Unión de las variables con la importancia
+
+X2_con_importancias = pd.concat([X3, importancia], axis=1)
+X2_con_importancias
 
 # Métricas de desempeño
 # ==============================================================================
