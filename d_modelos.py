@@ -37,6 +37,7 @@ import openpyxl
 ####### 10. Creación de modelo afinado
 ####### 11. Entramiento del modelo
 ####### 12. Métricas de desempeño
+####### 13. Matriz de confusión
 # ==============================================================================
 #### Se trae la base de datos nueva para iniciar con el modelo ####
 
@@ -178,8 +179,10 @@ print ("Train - classification report:\n", metrics.classification_report(y_train
 print ("Test - Accuracy :", metrics.accuracy_score(y_test, ranfor.predict(X_test)))
 print ("Test - classification report :", metrics.classification_report(y_test, ranfor.predict(X_test)))
 
-y_hat=ranfor.predict(X_test)
+
 # Matriz de confusión
+# ==============================================================================
+y_hat=ranfor.predict(X_test)
 fig = plt.figure(figsize=(11,11))
 cm = confusion_matrix(y_test,y_hat, labels=ranfor.classes_)
 disp = ConfusionMatrixDisplay(confusion_matrix = cm, display_labels=ranfor.classes_)
