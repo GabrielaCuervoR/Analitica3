@@ -70,7 +70,7 @@ def medir_modelos(modelos,scoring,X,y,cv):
   return metric_modelos
 
 
-def preparar_datos (df):
+def preparar_datos(df):
    
     #######Cargar y procesar nuevos datos ######
     
