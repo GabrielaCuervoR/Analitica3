@@ -80,7 +80,7 @@ def preparar_datos(df):
     var_names=joblib.load("var_names.pkl")
     scaler=joblib.load( "scaler.pkl")
 
- ####Ejecutar funciones de transformaciones
+    ####Ejecutar funciones de transformaciones
     df=funciones.imputar_fn(df,list_cat)
     df_dummies=pd.get_dummies(df,columns=list_dummies)
     df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['Attrition','EmployeeID'])]
