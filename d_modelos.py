@@ -51,39 +51,51 @@ funciones.ejecutar_sql('preprocesamiento.sql', cur)
 df2=pd.read_sql("select * from base_nueva", conn)
 df2 = df2.drop(columns=['index'], axis=1)##Se elimina la columna index que por defecto la sube sql
 
+
+
 ### verificación de nulos y datos faltantes
 # ==============================================================================
 df2.isnull().sum() #Mirar la cantidad de nulos de cada variable
 
+
+
 ### imputación y eliminación de varibles 
 # ==============================================================================
-list_cat=['EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance']
-list_num=['NumCompaniesWorked','TotalWorkingYears']
+list_cat=['EnvironmentSatisfaction','JobSatisfaction','WorkLifeBalance'] #variables categóricas
+list_num=['NumCompaniesWorked','TotalWorkingYears'] #variables numéricas
 
 funciones.imputar_fc(df2,list_cat)
 funciones.imputar_fn(df2,list_num)
 df2 = df2.drop(['Over18','EmployeeCount'], axis = 1) #eliminación de variables de una sola categoria
 
+
+
 ### verificación de la base datos
 # ==============================================================================
 df2.isnull().sum() #se verifica que quede completa
 
+
+
 ### Transformación de variable objetivo
 # ==============================================================================
 df2['Attrition'] = df2['Attrition'].fillna('No') #se rellenan los nulos de la variable objetivo por No
-df2['Attrition'].value_counts()
+df2['Attrition'].value_counts() #se verifica el número de cada categória
 
-#### preparación de los datos 
+
+
+#### Preparación de los datos 
 # ==============================================================================
-y = df2.Attrition ##Variable Objetivo
-le = LabelEncoder()
-y = le.fit_transform(y)
+y = df2.Attrition ##Variable Objetivo 
+le = LabelEncoder() 
+y = le.fit_transform(y) ##Transformación a númerica
 
-print(y[0:5])
+print(y[0:5])  #verificación
 
 print(le.classes_)
 
-df2['Attrition'] = y
+df2['Attrition'] = y ## Retornando la variable objetivo ya numérica a la base de datos
+
+
 
 #### Cambiar tipo de datos de float a int
 # ==============================================================================
@@ -93,6 +105,8 @@ df2.WorkLifeBalance = df2.WorkLifeBalance.astype(int)
 df2.NumCompaniesWorked = df2.NumCompaniesWorked.astype(int)
 df2.TotalWorkingYears = df2.TotalWorkingYears.astype(int)
 
+
+
 #### Variables dummis
 # ==============================================================================
 df3=df2.copy()
@@ -100,15 +114,17 @@ list_dummies=['BusinessTravel','Department','EducationField','Gender','JobRole',
 df_dummies=pd.get_dummies(df3,columns=list_dummies)
 
 y=df_dummies.Attrition
-X1= df_dummies.loc[:,~df_dummies.columns.isin(['Attrition','EmployeeID'])]
-scaler=StandardScaler()
-scaler.fit(X1)
+X1= df_dummies.loc[:,~df_dummies.columns.isin(['Attrition','EmployeeID'])] #No se tiene en cuenta la variable objetivo ni el id del empleado
+scaler=StandardScaler()  
+scaler.fit(X1)  #Estandarización variables
 X2=scaler.transform(X1)
 X=pd.DataFrame(X2,columns=X1.columns)
 
 
-##### creación de modelos 
+
+##### Creación de modelos 
 # ==============================================================================
+#Se crean varios modelos para su respectiva comparación de desempeño
 m_log = LogisticRegression(max_iter=1000,random_state=42, class_weight='balanced')
 m_rf= RandomForestClassifier(random_state=42, class_weight='balanced')
 m_tc = tree.DecisionTreeClassifier(random_state=42, class_weight='balanced')
@@ -117,9 +133,13 @@ m_gbt=GradientBoostingClassifier(random_state=42)
 
 modelos=list([m_log, m_rf, m_tc, m_gbt])
 
-### selección de variables 
+
+
+
+#### Selección de variables 
 # ==============================================================================
-var_names= funciones.sel_variables(modelos,X,y,threshold="2.35*mean") #se decide usar el 2.35 mean para tener solo 10 variables en el modelo
+## Se seleccionan las variables con más peso en los modelos
+var_names= funciones.sel_variables(modelos,X,y,threshold="2.35*mean") #se decide usar el 2.35 mean para tener solo 11 variables en el modelo
 var_names.shape
 
 modelo=modelos[0]
@@ -139,7 +159,10 @@ acc_df.plot(kind='box') #### gráfico para modelos todas las varibles
 acc_varsel.plot(kind='box') ### gráfico para modelo variables seleccionadas
 acc.plot(kind='box') ### gráfico para modelos sel y todas las variables
 
-##### afinamiento de hiperparametros 
+
+
+
+##### Afinamiento de hiperparametros 
 # ==============================================================================
 # Separación en conjuntos de entrenamiento y validación con 80% de muestras para entrenamiento
 X_train, X_test, y_train, y_test = train_test_split(X2, y, test_size=0.2, random_state=42)
@@ -149,17 +172,20 @@ parameters = {'n_estimators': [20,40,80,100,150],
               'max_depth':[10,12,14,15,16],
               'max_leaf_nodes': [50,70,100, 300]}
 
-#Definición del modelo
-# ==============================================================================
-rfc = RandomForestClassifier(random_state=42, class_weight='balanced')
 
-grid_search = GridSearchCV(rfc, parameters, cv=5, scoring='f1', n_jobs=-1)
+
+
+##### Definición del modelo
+# ==============================================================================
+rfc = RandomForestClassifier(random_state=42, class_weight='balanced') #creación modelo para afinar
+
+grid_search = GridSearchCV(rfc, parameters, cv=5, scoring='f1', n_jobs=-1) #métrica f1 score
 grid_result = grid_search.fit(X_train, y_train)
 
 print('Best Params: ', grid_result.best_params_)
 print('Best Score: ', grid_result.best_score_)
 
-bestModel_rfc=grid_result.best_estimator_
+bestModel_rfc=grid_result.best_estimator_    ### modelo con mejor desempeño
 print("F1:{:.2f}".format(bestModel_rfc.score(X_test,y_test)))
 
 # ==============================================================================
@@ -177,18 +203,24 @@ ranfor = RandomForestClassifier(
          )
 ranfor.fit(X_train, y_train)
 
+
+
+
 #### Importancia de las variables
 # ==============================================================================
-importancia = ranfor.feature_importances_
+importancia = ranfor.feature_importances_   #importancia de las variables seleccionadas
 importancia = pd.DataFrame(importancia, columns=['Importancia'])
 X3 = pd.DataFrame(X2.columns, columns=['Variables'])
 
 ### Unión de las variables con la importancia
 
 X2_con_importancias = pd.concat([X3, importancia], axis=1)
-X2_con_importancias.sort_values(by=['Importancia'], ascending=False)
+X2_con_importancias.sort_values(by=['Importancia'], ascending=False) #visualización de acuerdo a su nivel de importancia
 
-# Métricas de desempeño
+
+
+
+######## Métricas de desempeño
 # ==============================================================================
 print ("Train - Accuracy :", metrics.accuracy_score(y_train, ranfor.predict(X_train)))
 print ("Train - classification report:\n", metrics.classification_report(y_train, ranfor.predict(X_train)))
@@ -196,7 +228,8 @@ print ("Test - Accuracy :", metrics.accuracy_score(y_test, ranfor.predict(X_test
 print ("Test - classification report :", metrics.classification_report(y_test, ranfor.predict(X_test)))
 
 
-# Matriz de confusión
+
+###### Matriz de confusión
 # ==============================================================================
 y_hat=ranfor.predict(X_test)
 fig = plt.figure(figsize=(11,11))
@@ -205,7 +238,11 @@ disp = ConfusionMatrixDisplay(confusion_matrix = cm, display_labels=ranfor.class
 disp.plot(cmap='gist_earth')
 plt.show()
 
-### exportar y guardar objetos 
+
+
+
+
+###### Exportar y guardar objetos 
 # ==============================================================================
 
 joblib.dump(rfc, "rfc.pkl") ##  Modelo final con variables seleccionadas
