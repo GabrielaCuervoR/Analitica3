@@ -70,22 +70,26 @@ def medir_modelos(modelos,scoring,X,y,cv):
   return metric_modelos
 
 
-def preparar_datos(df):
-   
-    #######Cargar y procesar nuevos datos ######
-    
-    list_cat=joblib.load("list_cat.pkl")
-    list_num=joblib.load("list_num.pkl")
-    list_dummies=joblib.load("list_dummies.pkl")
-    var_names=joblib.load("var_names.pkl")
-    scaler=joblib.load( "scaler.pkl")
+def preparar_datos (df):
 
-    ####Ejecutar funciones de transformaciones
-    df=funciones.imputar_fn(df,list_cat)
-    df_dummies=pd.get_dummies(df,columns=list_dummies)
-    df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['Attrition','EmployeeID'])]
-    X2=scaler.transform(df_dummies)
-    X=pd.DataFrame(X2,columns=df_dummies.columns)
-    X=X[var_names]
-    
-    return X
+  #### Cargar modelo y listas
+
+
+  list_cat=joblib.load("list_cat.pkl")
+  list_num=joblib.load("list_num.pkl")
+  list_dummies=joblib.load("list_dummies.pkl")
+  var_names=joblib.load("var_names.pkl")
+  scaler=joblib.load( "scaler.pkl")
+
+  ####Ejecutar funciones de transformaciones
+
+  df=funciones.imputar_fc(df,list_cat)
+  df=funciones.imputar_fn(df,list_num)
+  df_dummies=pd.get_dummies(df,columns=list_dummies)
+  df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['Attrition','EmployeeID'])]
+  X2=scaler.transform(df_dummies)
+  X=pd.DataFrame(X2,columns=df_dummies.columns)
+  X=X[var_names]
+
+
+  return X
