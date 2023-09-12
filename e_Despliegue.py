@@ -1,4 +1,4 @@
-
+import a_funciones as funciones
 import pandas as pd ### para manejo de datos
 import sqlite3 as sql
 import joblib
@@ -23,7 +23,7 @@ if __name__=="__main__":
   df = df.drop(['Over18','EmployeeCount','index'], axis = 1) #eliminación de variables de una sola categoria
 
   ####Otras transformaciones en python (imputación, dummies y seleccion de variables)
-  df_t= preparar_datos(df)
+  df_t= funciones.preparar_datos(df)
 
 
   ##Cargar modelo y predecir
